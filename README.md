@@ -206,9 +206,9 @@ Do not make an administrator account by exposing an unrestricted public registra
 
 ### Deployment URLs
 
-- Frontend: _Add deployed URL_
-- Backend API: _Add deployed URL_
-- API documentation: _Add deployed `/docs` URL_
+- Frontend application: https://retain-app.onrender.com
+- Backend API: https://retain-api-5f5b.onrender.com
+- Interactive API documentation: https://retain-api-5f5b.onrender.com/docs
 
 ## Development checks
 
