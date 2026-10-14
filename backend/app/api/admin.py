@@ -64,17 +64,19 @@ def get_admin_insights(
         for row in category_rows
     ]
 
-    category_spending.sort(
+    top_categories = sorted(
+        category_spending,
         key=lambda item: (
+            -item["expense_count"],
             -item["total_spent"],
             item["category_name"].lower(),
-        )
-    )
+        ),
+    )[:5]
 
-    top_categories = category_spending[:5]
     bottom_categories = sorted(
         category_spending,
         key=lambda item: (
+            item["expense_count"],
             item["total_spent"],
             item["category_name"].lower(),
         ),
