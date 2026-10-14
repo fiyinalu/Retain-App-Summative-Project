@@ -1,53 +1,54 @@
 # Retain — Personal Expense & Budget Manager
 
-Retain is a full-stack web application for tracking personal expenses, managing monthly budgets, and understanding spending habits. It also includes an administrator dashboard for managing categories and viewing platform-wide insights.
+Retain is a full-stack web application that helps users record personal expenses, manage monthly budgets, and understand their spending habits. It includes a personal dashboard for tracking finances and an administrator dashboard for managing expense categories and viewing platform-wide statistics.
+
+**Live application:** https://retain-app.onrender.com
+**Backend API:** https://retain-api-5f5b.onrender.com
+**Interactive API documentation:** https://retain-api-5f5b.onrender.com/docs
 
 ## Features
 
-### User features
-- Register, sign in, and sign out.
-- View a personal spending dashboard.
+### Personal finance
+- Register an account, sign in, and sign out.
+- View a personal dashboard with monthly spending and budget summaries.
 - Create, view, edit, and delete expenses.
-- Search, filter, and sort expenses.
+- Search, filter, sort, and paginate expense records.
 - Filter expenses by category, payment method, date, and amount.
-- Paginate expense lists.
 - Create, update, and delete monthly budgets.
-- View monthly spending, remaining budget, and budget status.
+- Track the amount spent, remaining budget, and budget progress.
 - Review spending by category and recent expenses.
+- Navigate between the dashboard, expenses, budgets, and other available pages using the shared navigation.
 
-### Administrator features
-- Access a role-protected admin dashboard.
+### Administrator dashboard
+- Access administrator functionality through role-protected routes.
 - View registered-user and expense statistics.
 - Review total spending and current-month expense counts.
-- View spending by category, including top and bottom categories.
+- Examine spending by category, including top and bottom categories.
 - Review recent expenses and registered users.
 - Create, edit, and delete expense categories.
-- Reassign expenses to `Uncategorized` when their category is deleted.
+- Reassign expenses to `Uncategorized` when a category is deleted.
 
-### Security and data handling
-- Authentication uses JSON Web Tokens.
-- Passwords are hashed before storage.
-- Users can access only their own expenses and budgets.
-- Administrator operations are protected by backend role checks.
-- New registrations receive the standard user role; administrator access must be granted through a trusted administrative process.
+### Authentication and security
+- Authenticate users with JSON Web Tokens (JWT).
+- Hash passwords before storing them.
+- Restrict expenses and budgets to their respective owners.
+- Protect administrator operations with backend role checks.
+- Assign the standard user role to new registrations by default.
+
+Administrator access should be granted only through a trusted administrative process. The application does not provide an unrestricted public registration process for administrator accounts.
 
 ## Technology stack
 
-**Frontend**
-- React
-- TypeScript
-- Vite
-- React Context for authentication and protected routes
-- Redux Toolkit for expense state and related interactions
-- CSS for responsive styling
-
-**Backend**
-- Python
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-- Pydantic
-- JWT-based authentication
+| Area | Technologies |
+|---|---|
+| Frontend | React, TypeScript, Vite, CSS |
+| Authentication and routing | React Context, protected routes |
+| Expense state management | Redux Toolkit |
+| Backend API | Python, FastAPI |
+| Data validation | Pydantic |
+| Database and ORM | PostgreSQL, SQLAlchemy |
+| Authentication | JWT, password hashing |
+| Deployment | Render |
 
 ## Project structure
 
@@ -55,33 +56,58 @@ Retain is a full-stack web application for tracking personal expenses, managing 
 Retain-App-Summative-Project/
 ├── backend/
 │   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── models/
-│   │   └── schemas/
-│   ├── requirements.txt
-│   └── .env.example
+│   │   ├── api/          # Authentication, expenses, budgets, categories and admin routes
+│   │   ├── core/         # Configuration, database initialization and shared logic
+│   │   ├── models/       # Database models
+│   │   ├── schemas/      # Request and response schemas
+│   │   └── main.py       # FastAPI application entry point
+│   ├── .env.example
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── store/
-│   │   └── types/
-│   └── package.json
+│   │   ├── components/   # Shared UI components and application layout
+│   │   ├── pages/        # Application pages
+│   │   ├── services/     # API communication
+│   │   ├── store/        # Redux state management
+│   │   └── types/        # TypeScript types
+│   ├── package.json
+│   └── index.html
+├── .gitignore
 └── README.md
 ```
 
-## Local setup
+## Getting started locally
 
-### Requirements
-- Python 3.11 or a compatible Python version
+### Prerequisites
+
+Install the following before starting:
+
+- Python 3.11 or a compatible version
 - Node.js and npm
 - PostgreSQL
 
-### 1. Configure the backend
+### 1. Clone the repository
 
-Open a terminal in the project directory:
+```bash
+git clone https://github.com/fiyinalu/Retain-App-Summative-Project.git
+cd Retain-App-Summative-Project
+```
+
+### 2. Create a PostgreSQL database
+
+Start PostgreSQL and create a database named `retain`.
+
+For example, if PostgreSQL command-line tools are available:
+
+```bash
+createdb retain
+```
+
+If that command does not work with your PostgreSQL setup, create the database using your preferred PostgreSQL administration tool.
+
+### 3. Set up the backend
+
+From the project root:
 
 ```bash
 cd backend
@@ -90,7 +116,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Create a `backend/.env` file with your local PostgreSQL database details:
+Create your local environment file from the example:
+
+```bash
+cp .env.example .env
+```
+
+Update `backend/.env` with your local PostgreSQL credentials and a strong secret key:
 
 ```dotenv
 DATABASE_URL=postgresql://YOUR_DB_USER:YOUR_DB_PASSWORD@localhost:5432/retain
@@ -99,7 +131,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 FRONTEND_ORIGIN=http://localhost:5173
 ```
 
-Replace the database username, password, and secret with your own values. Do not commit `.env` or share production credentials.
+Replace the example values with your own configuration. Do not commit `.env` or expose database credentials, JWT secrets, or other production secrets.
 
 Start the backend from the `backend` directory:
 
@@ -107,124 +139,134 @@ Start the backend from the `backend` directory:
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-On startup, the application creates missing database tables and ensures the default `Uncategorized` category exists.
+On startup, the application initializes missing database tables and creates the default `Uncategorized` category when needed.
 
-### 2. Configure the frontend
+Keep this terminal running.
 
-Open a second terminal:
+### 4. Set up the frontend
+
+Open a second terminal and run:
 
 ```bash
-cd frontend
+cd /Users/mac/Retain-App-Summative-Project/frontend
 npm install
 ```
 
-The frontend uses `VITE_API_BASE_URL` to select the backend API. For local development, the default is:
+The frontend uses `VITE_API_BASE_URL` to determine the backend API address. For local development, the default API URL is:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-To override it, create `frontend/.env.local`:
+To configure it explicitly, create `frontend/.env.local` containing:
 
 ```dotenv
 VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-Start the frontend:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Open the local URL printed by Vite, usually `http://localhost:5173`.
+Open the local URL shown by Vite, usually:
 
-Keep both development servers running while using the application.
+http://localhost:5173
 
-## API documentation
+Both the backend and frontend servers must remain running while you use the local application.
 
-When the backend is running, interactive API documentation is available at:
+## API overview
 
-- Swagger UI: `http://127.0.0.1:8000/docs`
-- OpenAPI schema: `http://127.0.0.1:8000/openapi.json`
-- Health check: `http://127.0.0.1:8000/health`
+The backend provides a REST API built with FastAPI.
 
-### Main API routes
+When the backend is running locally, its interactive documentation is available at:
 
-| Area | Routes | Access |
+- **Swagger UI:** http://127.0.0.1:8000/docs
+- **OpenAPI schema:** http://127.0.0.1:8000/openapi.json
+- **Health check:** http://127.0.0.1:8000/health
+
+### Main routes
+
+| Area | Route | Access |
 |---|---|---|
-| Authentication | `/api/auth/register`, `/api/auth/login`, `/api/auth/me` | Public or authenticated, depending on route |
+| Authentication | `/api/auth/register` | Public registration |
+| Authentication | `/api/auth/login` | Public login |
+| Current user | `/api/auth/me` | Authenticated |
 | Expenses | `/api/expenses` | Authenticated; user-scoped |
 | Categories | `/api/categories` | Authenticated reads; administrator writes |
 | Budgets | `/api/budgets` | Authenticated; user-scoped |
 | Budget summary | `/api/budgets/summary` | Authenticated |
 | Admin insights | `/api/admin/insights` | Administrator only |
 
-See `/docs` for supported HTTP methods, request schemas, query parameters, and response formats.
+Refer to the interactive API documentation for supported HTTP methods, request bodies, response schemas, query parameters, and additional endpoints.
 
-## Production deployment
+The health-check endpoint returns a healthy status when the API is available.
 
-The application can be deployed as a frontend static site, a backend web service, and a managed PostgreSQL database.
+## Deployment
 
-Suggested hosting:
-- Frontend and backend: Render
-- PostgreSQL: Neon
+The application is deployed on Render, with the frontend and backend running as separate services.
 
-### Backend service
+- **Frontend:** https://retain-app.onrender.com
+- **Backend:** https://retain-api-5f5b.onrender.com
+- **API documentation:** https://retain-api-5f5b.onrender.com/docs
 
-Configure the backend service with:
+### Backend service configuration
 
-- Root directory: `backend`
-- Build command: `pip install -r requirements.txt`
-- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-- Health-check path: `/health`
+Configure the backend web service with:
 
-Set these environment variables in the hosting dashboard:
+- **Root directory:** `backend`
+- **Build command:** `pip install -r requirements.txt`
+- **Start command:** `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Health-check path:** `/health`
 
-- `DATABASE_URL`: hosted PostgreSQL connection string
-- `SECRET_KEY`: a strong, randomly generated secret
-- `ACCESS_TOKEN_EXPIRE_MINUTES`: `30`
-- `FRONTEND_ORIGIN`: the deployed frontend origin, including `https://`
+Configure these environment variables in the hosting dashboard:
 
-### Frontend static site
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Hosted PostgreSQL connection string |
+| `SECRET_KEY` | Strong secret used for authentication |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Token lifetime in minutes |
+| `FRONTEND_ORIGIN` | Exact deployed frontend origin |
 
-Configure the frontend site with:
+### Frontend static site configuration
 
-- Root directory: `frontend`
-- Build command: `npm install && npm run build`
-- Publish directory: `dist`
-- `VITE_API_BASE_URL`: the deployed backend base URL, including `https://` and without a trailing slash
+Configure the frontend with:
 
-After the frontend has been deployed, set `FRONTEND_ORIGIN` on the backend to the exact frontend origin and redeploy the backend.
+- **Root directory:** `frontend`
+- **Build command:** `npm install && npm run build`
+- **Publish directory:** `dist`
+- **Environment variable:** `VITE_API_BASE_URL`, set to the deployed backend URL without a trailing slash
 
-Use hosted environment-variable settings for production secrets. Never place database credentials or production secrets in frontend variables or commit them to source control.
+Ensure that the backend's `FRONTEND_ORIGIN` matches the deployed frontend origin so browser requests are allowed by the CORS configuration.
 
-### Production database and administrator access
+Production secrets should be stored in the hosting provider's environment settings, not in source code or frontend environment variables.
 
-Use a separate hosted database and verify that its schema is initialized before accepting users. The application startup creates missing tables, but it does not migrate existing table schemas.
+### Database and administrator setup
 
-Do not make an administrator account by exposing an unrestricted public registration or role-update endpoint. Grant the initial administrator role through a trusted, controlled database administration process.
+Use a PostgreSQL database configured for the deployment environment. The application initializes missing tables at startup; this is not a replacement for database migrations when changing the structure of existing tables.
 
-### Deployment URLs
-
-- Frontend application: https://retain-app.onrender.com
-- Backend API: https://retain-api-5f5b.onrender.com
-- Interactive API documentation: https://retain-api-5f5b.onrender.com/docs
+Administrator privileges should be granted through a trusted, controlled administrative process. Do not expose database credentials or create an unrestricted public endpoint for changing user roles.
 
 ## Development checks
 
-From the frontend directory:
+### Frontend
+
+Run these commands from the `frontend` directory:
 
 ```bash
 npm run lint
 npm run build
 ```
 
-From the backend directory with the virtual environment activated:
+The lint command checks the frontend code, while the build command runs the TypeScript build checks and creates the production bundle.
+
+### Backend
+
+Activate the backend virtual environment and run these commands from the `backend` directory:
 
 ```bash
 python -m compileall -q app
 ```
 
-## License
-
-Add the applicable project license here if one is required.
+This checks Python files for compilation errors. It does not replace integration or functional tests.
